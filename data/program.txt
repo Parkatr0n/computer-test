@@ -1,0 +1,7 @@
+
+set x 10
+set y 20
+load 0 x
+load 1 y
+sum
+cot 0
