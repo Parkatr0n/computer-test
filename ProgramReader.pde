@@ -1,5 +1,5 @@
 
-import java.util.HashMap;
+import java.util.Map;
 
 class ProgramReader {
   HashMap<String, Integer> jumpList = new HashMap<String, Integer>();
@@ -48,6 +48,19 @@ class ProgramReader {
         reg[0] /= reg[1];
       } else if (Split[0].equals("mlt")) {
         reg[0] *= reg[1];
+      } else if (Split[0].equals("cmp")) {
+        // Compare instruction
+        // First argument is what type of compare
+        // Second argument is the jump position IF THE COMPARE RETURNS TRUE
+        String cmpType = Split[1];
+        String jumpPos = Split[2];
+        if (cmpType == "eq") {
+          if (reg[0] == reg[1]) {
+            i = jumpList.get(Split[1]);
+          }
+        }
+      } else if (Split[0].equals("getKey")) {
+        Variable var = getVarByName(Split[1]);
       }
     }
   }

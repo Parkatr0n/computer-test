@@ -1,2 +1,8 @@
 
-
+set x 10
+set y 10
+load 0 x
+load 1 y
+cmp eq jump
+cot 0
+.jump
