@@ -3,8 +3,19 @@ import java.util.Map;
 
 class ProgramReader {
   HashMap<String, Integer> jumpList = new HashMap<String, Integer>();
-  ArrayList<Variable> vars = new ArrayList<Variable>();
+  HashMap<String, Integer> vars = new HashMap<String, Integer>();
+  // ArrayList<Variable> vars = new ArrayList<Variable>();
   int[] reg = {0, 0};
+  
+  int keyPress = 0;
+  int currentKey = 0;
+  
+  int rectStartX;
+  int rectStartY;
+  
+  void setKeyPress(int _keyPress) {
+    keyPress = _keyPress;
+  }
   
   void read(String file) {
     // Read and execute the file
@@ -12,7 +23,14 @@ class ProgramReader {
     
     // Adding to the jumplist
     for (int i = 0; i < File.length; i++) {
-      String[] Split = File[i].split(" ");
+      String[] Split = trim(File[i]).split(" ");
+      
+      if (Split[0].equals(";")) {
+        // This is a comment, skip to next line
+        i++;
+      }
+      
+      //println(File[i]);
       if (File[i].length() > 0) {
         // println(File[i].length(), File[i]);
         if (Split[0].charAt(0) == '.') {
@@ -24,20 +42,26 @@ class ProgramReader {
     
     /* Actual Program Execution */
     for (int i = 0; i < File.length; i++) {
-      String[] Split = File[i].split(" ");
+      String[] Split = trim(File[i]).split(" ");
       
       /* Commands */
       if (Split[0].equals("set")) {
-        vars.add(new Variable(Split[1], int(Split[2])));
+        vars.put(Split[1], int(Split[2]));
+      } else if (Split[0].equals("reset")) {
+        vars.put(Split[1], reg[int(Split[2])]);
       } else if (Split[0].equals("load")) {
-        reg[int(Split[1])] = getVarByName(Split[2]).value;
+        reg[int(Split[1])] = vars.get(Split[2]);
       } else if (Split[0].equals("cot")) {
+        boolean newLine = false;
         if (Split.length > 2) {
           if (Split[2].equals("n")) {
             println(reg[int(Split[1])]);
+            newLine = true;
           }
         }
-        print(reg[int(Split[1])]);
+        if (!newLine) {
+          print(reg[int(Split[1])]);
+        }
       } else if (Split[0].equals("jmp")) {
         i = jumpList.get(Split[1]);
       } else if (Split[0].equals("sum")) {
@@ -54,23 +78,49 @@ class ProgramReader {
         // Second argument is the jump position IF THE COMPARE RETURNS TRUE
         String cmpType = Split[1];
         String jumpPos = Split[2];
-        if (cmpType == "eq") {
-          if (reg[0] == reg[1]) {
-            i = jumpList.get(Split[1]);
-          }
-        }
+        boolean jump = false;
+        if (cmpType.equals("eq")) { if (reg[0] == reg[1]) { jump = true; }
+        } else if (cmpType.equals("neq")) { if (reg[0] != reg[1]) { jump = true; }
+        } else if (cmpType.equals("ls")) { if (reg[0] < reg[1]) { jump = true; }
+        } else if (cmpType.equals("gr")) { if (reg[0] > reg[1]) { jump = true; }
+        } else if (cmpType.equals("lse")) { if (reg[0] <= reg[1]) { jump = true; }
+        } else if (cmpType.equals("gre")) { if (reg[0] >= reg[1]) { jump = true; } }
+        if (jump) { i = jumpList.get(jumpPos); }
       } else if (Split[0].equals("getKey")) {
-        Variable var = getVarByName(Split[1]);
+        // Variable var = getVarByName(Split[1]);
+        
+        // Set that variable to whatever the most recent keypress was
+        // var.value = keyPress;
+        reg[0] = keyCode;
+        print(reg[0]);
+        // print(keyCode);
+      } else if (Split[0].equals(";")) {
+        // This is a comment, skip to next line
+        i++;
+      } else if (Split[0].equals("point")) {
+        int x = reg[0];
+        int y = reg[1];
+        
+        stroke(0);
+        point(x, y);
+      } else if (Split[0].equals("st_rect")) {
+        rectStartX = reg[0];
+        rectStartY = reg[1];
+      } else if (Split[0].equals("fn_rect")) {
+        noStroke();
+        fill(0);
+        rectMode(CORNERS);
+        rect(rectStartX, rectStartY, reg[0], reg[1]);
       }
     }
   }
   
-  Variable getVarByName(String name) {
+  /* Variable getVarByName(String name) {
     for (int i = 0; i < vars.size(); i++) {
       if (vars.get(i).name.equals(name)) {
         return vars.get(i);
       }
     }
     return new Variable("ERROR", -40000);
-  }
+  } */
 }

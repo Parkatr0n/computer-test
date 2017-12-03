@@ -1,0 +1,7 @@
+
+Input
+
+When the user presses a key, test.pde sets ProgramReader's reg[0] to the
+	char value of the key pressed.
+
+

@@ -1,8 +1,16 @@
 
-set x 10
-set y 10
-load 0 x
-load 1 y
-cmp eq jump
-cot 0
-.jump
+set i 0
+set max 10
+set one 1
+
+.loop
+load 0 i
+load 1 max
+cmp gre leave
+	cot 0 n
+load 0 i
+load 1 one
+sum
+reset i 0
+jmp loop
+.leave
